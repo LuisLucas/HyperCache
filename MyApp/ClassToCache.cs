@@ -24,6 +24,7 @@
         }
     }
 
+
     public partial class ClassToCache : IClassToCache
     {
         string IClassToCache.GetSomething(int anInt)
