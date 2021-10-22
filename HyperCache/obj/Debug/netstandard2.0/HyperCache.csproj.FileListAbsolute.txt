@@ -1,9 +1,0 @@
-D:\Code Projects\HyperCache\HyperCache\bin\Debug\netstandard2.0\HyperCache.deps.json
-D:\Code Projects\HyperCache\HyperCache\bin\Debug\netstandard2.0\HyperCache.dll
-D:\Code Projects\HyperCache\HyperCache\bin\Debug\netstandard2.0\HyperCache.pdb
-D:\Code Projects\HyperCache\HyperCache\obj\Debug\netstandard2.0\HyperCache.GeneratedMSBuildEditorConfig.editorconfig
-D:\Code Projects\HyperCache\HyperCache\obj\Debug\netstandard2.0\HyperCache.AssemblyInfoInputs.cache
-D:\Code Projects\HyperCache\HyperCache\obj\Debug\netstandard2.0\HyperCache.AssemblyInfo.cs
-D:\Code Projects\HyperCache\HyperCache\obj\Debug\netstandard2.0\HyperCache.csproj.CoreCompileInputs.cache
-D:\Code Projects\HyperCache\HyperCache\obj\Debug\netstandard2.0\HyperCache.dll
-D:\Code Projects\HyperCache\HyperCache\obj\Debug\netstandard2.0\HyperCache.pdb
