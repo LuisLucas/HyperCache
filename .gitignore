@@ -5,8 +5,6 @@
 *.suo
 *.user
 *.sln.docstates
-bin
-obj
 
 # Build results
 
@@ -15,6 +13,9 @@ obj
 x64/
 [Bb]in/
 [Oo]bj/
+[Dd]ebug*/**
+[Bb]in
+obj/
 
 # MSTest test Results
 [Tt]est[Rr]esult*/
