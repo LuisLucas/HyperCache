@@ -1,12 +1,8 @@
 ﻿namespace MyApp
 {
     using HyperCacheGenerator;
+    //using Microsoft.Extensions.Caching.Memory;
     using System;
-    
-    public interface IClassToCache
-    {
-        string GetSomething(int anInt);
-    }
 
     [HyperCache]
     public partial class ClassToCache : IClassToCache
@@ -18,39 +14,25 @@
         }
 
         public string GetSomething(int anInt)
-        {
+        { 
             Console.WriteLine("This was called in ClassToCache");
             return Convert.ToString((anInt * random.Next()));
         }
     }
 
-
-    public partial class ClassToCache : IClassToCache
+    /*public partial class ClassToCache : IClassToCache
     {
         string IClassToCache.GetSomething(int anInt)
         {
             Console.WriteLine("This was called in IClassToCache");
-            return this.GetSomething(anInt);
+            HyperCacheGenerated.Cache.TryGetValue("", out var result);
+            if(result is null)
+            {
+                var res = this.GetSomething(anInt);
+                HyperCacheGenerated.Cache.Set("", res);
+                return res;
+            }
+            return (string)result;
         }
-    }
-
-
-
-    /*public class ProxyCache : ICache
-    {
-        public ProxyCache()
-        {
-
-        }
-
-        public string GetSomething(int anInt)
-        {
-            return string.Empty;
-        }
-    }
-
-    public interface ICache
-    {
-
     }*/
 }

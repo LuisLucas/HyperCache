@@ -12,9 +12,17 @@
         {
             if (syntaxNode is ClassDeclarationSyntax classSyntax && classSyntax.HaveAttribute(HyperCacheAttribute.Name))
             {
-                classSyntax.
+                //var className = classSyntax.Identifier.ValueText;
+                //var interfaceName = classSyntax.BaseList.Types.FirstOrDefault();
                 CandidateProxies.Add(classSyntax);
             }
         }
+    }
+
+    public class HyperCacheCandidates
+    {
+        public string ClassName { get; set; }
+
+        public ClassDeclarationSyntax ClassDeclarationSyntax { get; set; }
     }
 }

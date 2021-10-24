@@ -19,6 +19,9 @@ namespace MyApp
             IClassToCache test = new ClassToCache();
             result = test.GetSomething(randomInt);
             Console.WriteLine("Third call: " + result);
+
+            result = test.GetSomething(randomInt);
+            Console.WriteLine("Fourth call cached: " + result);
         }
     }
 }

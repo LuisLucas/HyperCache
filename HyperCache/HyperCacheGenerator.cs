@@ -1,6 +1,7 @@
 ﻿namespace HyperCacheGenerator
 {
     using Microsoft.CodeAnalysis;
+    using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.CodeAnalysis.Text;
     using System;
     using System.Diagnostics;
@@ -26,7 +27,56 @@
 
                     foreach (var classToCache in cacheSyntaxReceiver.CandidateProxies)
                     {
+                        var nameSpaceDeclaration = (NamespaceDeclarationSyntax)classToCache.Parent;
+                        var nameSpace = nameSpaceDeclaration.Name; // + ".HyperCache";
+                        var className = classToCache.Identifier.ValueText;
 
+                        var semanticModel = context.Compilation.GetSemanticModel(classToCache.SyntaxTree);
+                        var typeSymbol = (INamedTypeSymbol)ModelExtensions.GetDeclaredSymbol(semanticModel, classToCache)!;
+                        //var symbol = semanticModel.GetDeclaredSymbol(classToCache);
+                        var interfaceName = "I" + typeSymbol.Name;
+
+                        var method = typeSymbol.GetMembers().Where(x => x is IMethodSymbol).Select(x => (IMethodSymbol)x);
+                        var methodName = "";
+                        var returnType = "";
+                        var parameters = "";
+                        var cacheKey = "";
+                        foreach (var x in method)
+                        {
+                            methodName = x.Name;
+                            returnType = x.ReturnType.ToString();
+                            foreach(var param in x.Parameters)
+                            {
+                                parameters = param.Type + " " + param.Name;
+                                cacheKey = param.Name + " ";
+                            }
+                        }
+                        var classBuilder = new StringBuilder($@"
+namespace {nameSpace}
+{{
+    using System;
+    using Microsoft.Extensions.Caching.Memory;
+
+    public partial class {className} : {interfaceName}
+    {{
+        {returnType} {interfaceName}.{methodName}({parameters})
+        {{
+            Console.WriteLine(""This was called in IClassToCache"");
+            var cacheKey = ""{methodName}"" + {cacheKey};
+            HyperCacheGenerated.Cache.TryGetValue(cacheKey, out var result);
+            if(result is null)
+            {{
+                var res = this.GetSomething(anInt);
+                HyperCacheGenerated.Cache.Set(cacheKey, res);
+                return res;
+            }}
+            return (string)result;
+
+        }}
+    }}
+}}
+");
+                        context.AddSource("FirstClass", SourceText.From(classBuilder.ToString(), Encoding.UTF8));
                     }
                 }
 
@@ -49,7 +99,7 @@
 
                         public static class HyperCacheGenerated
                         {
-                            public static MemoryCache Cache { get; private set; }
+                            public static IMemoryCache Cache { get; private set; }
 
                             static HyperCacheGenerated()
                             {
