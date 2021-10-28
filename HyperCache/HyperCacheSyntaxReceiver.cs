@@ -6,7 +6,7 @@
 
     public class HyperCacheSyntaxReceiver : ISyntaxReceiver
     {
-        public List<ClassDeclarationSyntax> CandidateProxies { get; } = new List<ClassDeclarationSyntax>();
+        public List<ClassDeclarationSyntax> CacheCandidates { get; } = new List<ClassDeclarationSyntax>();
 
         public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
         {
@@ -14,7 +14,7 @@
             {
                 //var className = classSyntax.Identifier.ValueText;
                 //var interfaceName = classSyntax.BaseList.Types.FirstOrDefault();
-                CandidateProxies.Add(classSyntax);
+                CacheCandidates.Add(classSyntax);
             }
         }
     }
