@@ -23,6 +23,12 @@
                 {
                     CacheGenerator.AddHyperCache(context);
 
+                    string emitLogging = "";
+                    var property = "HyperCache_AbsoluteExpiration";
+                    if (context.AnalyzerConfigOptions.GlobalOptions.TryGetValue($"build_property.{property}", out var emitLoggingSwitch))
+                    {
+                        emitLogging = emitLoggingSwitch;
+                    }
                     ClassGenerator.AddCacheToClass(cacheSyntaxReceiver.CacheCandidates, context);
                 }
 
