@@ -22,6 +22,7 @@
                 if (sintaxReceiver is HyperCacheSyntaxReceiver cacheSyntaxReceiver && cacheSyntaxReceiver.CacheCandidates.Any())
                 {
                     CacheGenerator.AddHyperCache(context);
+
                     ClassGenerator.AddCacheToClass(cacheSyntaxReceiver.CacheCandidates, context);
                 }
 

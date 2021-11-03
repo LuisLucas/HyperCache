@@ -4,6 +4,8 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <LangVersion>preview</LangVersion>
+    <HyperCache_AbsoluteExpiration>5</HyperCache_AbsoluteExpiration>
+    <HyperCache_SlidingExpiration>5</HyperCache_SlidingExpiration>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,4 +19,17 @@
   <ItemGroup>
     <ProjectReference Include="..\HyperCache\HyperCache.csproj" OutputItemType="Analyzer" />
   </ItemGroup>
+  <ItemGroup>
+    <EditorConfigFiles Remove="D:\Code Projects\HyperCache\MyApp\.editorconfig" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="D:\Code Projects\HyperCache\MyApp\.editorconfig" />
+  </ItemGroup>
+
+  <!-- Set visibility of those props to SourceGenerator-->
+  <ItemGroup>
+    <CompilerVisibleProperty Include="HyperCache_AbsoluteExpiration" />
+    <CompilerVisibleProperty Include="HyperCache_SlidingExpiration" />
+  </ItemGroup>
+  
 </Project>

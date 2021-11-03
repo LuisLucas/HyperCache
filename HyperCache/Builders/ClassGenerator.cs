@@ -1,5 +1,6 @@
 ﻿namespace HyperCache.Builders
 {
+    using HyperCache.Helper;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.CodeAnalysis.Text;
@@ -16,30 +17,42 @@
                 var nameSpace = GetNamespace(classToCache);
                 var className = GetClassName(classToCache);
                 var typeSymbol = GetTypeSymbol(context, classToCache);
-
-                var interfaceName = "I" + typeSymbol.Name;
-                var interfaces = typeSymbol.AllInterfaces;
                 var methods = GetMethods(typeSymbol);
 
                 var classAsText = new StringBuilder();
-                BuildClassHeader(nameSpace, className, interfaceName, classAsText);
-                MethodGenerator.BuildMethods(methods, interfaceName, interfaces, classAsText);
+                BuildClassHeader(nameSpace, className, typeSymbol, classAsText);
+                MethodGenerator.BuildMethods(methods, classAsText);
+
+                string emitLogging = "";
+                var property = "HyperCache_AbsoluteExpiration";
+                if (context.AnalyzerConfigOptions.GlobalOptions.TryGetValue($"build_property.{property}", out var emitLoggingSwitch))
+                {
+                    emitLogging = emitLoggingSwitch;//.Equals("true", System.StringComparison.OrdinalIgnoreCase);
+                    classAsText.Append($@"
+public void Another()
+{{
+var x = ""{emitLogging}"";
+}}
+");
+                }
+
+
                 BuildFooter(classAsText);
                 AddClassToSource(context, nameSpace, className, classAsText);
             }
         }
 
-        private static void BuildClassHeader(string nameSpace, string className, string interfaceName, StringBuilder classAsText)
+        private static void BuildClassHeader(string nameSpace, string className, INamedTypeSymbol classtoAddCache, StringBuilder classAsText)
         {
-             classAsText.Append($@"
+            var interfaces = classtoAddCache.AllInterfaces.Select(x => x.Name).AppendAll(", ");
+            classAsText.Append($@"
 namespace {nameSpace}
 {{
     using System;
     using Microsoft.Extensions.Caching.Memory;
 
-    public partial class {className} : {interfaceName}
-    {{
-
+    public partial class {className} : {interfaces}
+{{
 ");
         }
 
@@ -59,8 +72,9 @@ namespace {nameSpace}
         private static IEnumerable<IMethodSymbol> GetMethods(INamedTypeSymbol typeSymbol)
         {
             return typeSymbol
-                .GetMembers()
-                .Where(x => x.Kind is SymbolKind.Method)
+                .AllInterfaces
+                .SelectMany(x => x.GetMembers())
+                .Where(x => x.Kind is SymbolKind.Method && typeSymbol.GetMembers(x.ContainingNamespace.Name + "." + x.ContainingType.Name + "." + x.Name).IsEmpty)
                 .Select(x => (IMethodSymbol)x);
         }
 

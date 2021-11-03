@@ -40,10 +40,10 @@ namespace MyApp
             Console.WriteLine("nine call cached: " + resultBool);
 
             resultBool = test.GetSomethingWitEvenMoreParams(randomInt, "another One", true);
-            Console.WriteLine("ten call cached: " + result);
+            Console.WriteLine("ten call cached: " + resultBool);
 
             resultBool = test.GetSomethingWitEvenMoreParams(randomInt, "yikes", true);
-            Console.WriteLine("eleven call cached: " + result);
+            Console.WriteLine("eleven call cached: " + resultBool);
         }
     }
 }
