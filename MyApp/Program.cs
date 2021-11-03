@@ -10,6 +10,7 @@ namespace MyApp
 
             var randomInt = new Random().Next();
             var classTocache = new ClassToCache();
+            //var result = "";
             var result = classTocache.GetSomething(randomInt);
             Console.WriteLine("First call: " + result);
 
@@ -22,6 +23,27 @@ namespace MyApp
 
             result = test.GetSomething(randomInt);
             Console.WriteLine("Fourth call cached: " + result);
+
+            result = test.GetSomethingWithMoreParams(randomInt, "yikes");
+            Console.WriteLine("Five call: " + result);
+
+            result = test.GetSomethingWithMoreParams(randomInt, "another One");
+            Console.WriteLine("Six call cached: " + result);
+
+            result = test.GetSomethingWithMoreParams(randomInt, "yikes");
+            Console.WriteLine("Seven call cached: " + result);
+
+            result = test.GetSomethingWithMoreParams(randomInt, "another One");
+            Console.WriteLine("Eight call cached: " + result);
+
+            var resultBool = test.GetSomethingWitEvenMoreParams(randomInt, "yikes", true);
+            Console.WriteLine("nine call cached: " + resultBool);
+
+            resultBool = test.GetSomethingWitEvenMoreParams(randomInt, "another One", true);
+            Console.WriteLine("ten call cached: " + result);
+
+            resultBool = test.GetSomethingWitEvenMoreParams(randomInt, "yikes", true);
+            Console.WriteLine("eleven call cached: " + result);
         }
     }
 }

@@ -2,12 +2,9 @@
 {
     using HyperCache.Builders;
     using Microsoft.CodeAnalysis;
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
-    using Microsoft.CodeAnalysis.Text;
     using System;
     using System.Diagnostics;
     using System.Linq;
-    using System.Text;
 
     [Generator]
     public class HyperCacheGenerator : ISourceGenerator
@@ -25,7 +22,7 @@
                 if (sintaxReceiver is HyperCacheSyntaxReceiver cacheSyntaxReceiver && cacheSyntaxReceiver.CacheCandidates.Any())
                 {
                     CacheGenerator.AddHyperCache(context);
-                    ClassGenerator.AddCacheClasses(cacheSyntaxReceiver.CacheCandidates, context);
+                    ClassGenerator.AddCacheToClass(cacheSyntaxReceiver.CacheCandidates, context);
                 }
 
             }
