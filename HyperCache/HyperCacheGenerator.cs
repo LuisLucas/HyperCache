@@ -1,6 +1,7 @@
 ﻿namespace HyperCacheGenerator
 {
     using HyperCache.Builders;
+    using HyperCache.Configurations;
     using Microsoft.CodeAnalysis;
     using System;
     using System.Diagnostics;
@@ -21,15 +22,9 @@
                 var sintaxReceiver = context.SyntaxReceiver;
                 if (sintaxReceiver is HyperCacheSyntaxReceiver cacheSyntaxReceiver && cacheSyntaxReceiver.CacheCandidates.Any())
                 {
+                    var config = HyperCacheConfiguration.GetConfigurations(context);
                     CacheGenerator.AddHyperCache(context);
-
-                    string emitLogging = "";
-                    var property = "HyperCache_AbsoluteExpiration";
-                    if (context.AnalyzerConfigOptions.GlobalOptions.TryGetValue($"build_property.{property}", out var emitLoggingSwitch))
-                    {
-                        emitLogging = emitLoggingSwitch;
-                    }
-                    ClassGenerator.AddCacheToClass(cacheSyntaxReceiver.CacheCandidates, context);
+                    ClassGenerator.AddCacheToClass(cacheSyntaxReceiver.CacheCandidates, context, config);
                 }
 
             }

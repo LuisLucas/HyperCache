@@ -1,7 +1,6 @@
 ﻿namespace HyperCache.Builders
 {
     using HyperCache.Helper;
-    using HyperCache.Writer;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.CodeAnalysis.Text;
@@ -11,7 +10,7 @@
 
     public static class ClassGenerator
     {
-        internal static void AddCacheToClass(List<ClassDeclarationSyntax> cacheCandidates, GeneratorExecutionContext context)
+        internal static void AddCacheToClass(List<ClassDeclarationSyntax> cacheCandidates, GeneratorExecutionContext context, HyperCacheConfig config)
         {
             foreach (var classToCache in cacheCandidates)
             {                
@@ -23,7 +22,7 @@
                
                 var classAsText = new StringBuilder();
                 BuildClassHeader(nameSpace, className, typeSymbol, classAsText);
-                BuildClassMethods(methods, classAsText);
+                BuildClassMethods(methods, config, classAsText);
                 BuildClassFooter(classAsText);
                 AddClassToSource(context, nameSpace, className, classAsText);
             }
@@ -43,14 +42,9 @@ namespace {nameSpace}
 ");
         }
 
-        private static void AddClassToSource(GeneratorExecutionContext context, string nameSpace, string className, StringBuilder classBuilder)
+        public static void BuildClassMethods(IEnumerable<IMethodSymbol> methods, HyperCacheConfig config, StringBuilder classAsText)
         {
-            context.AddSource($"{nameSpace}_{className}", SourceText.From(classBuilder.ToString(), Encoding.UTF8));
-        }
-
-        public static void BuildClassMethods(IEnumerable<IMethodSymbol> methods, StringBuilder classBuilder)
-        {
-            foreach (var method in methods.Where(x => x.DeclaredAccessibility != Accessibility.Private))
+            foreach (var method in methods)
             {
                 var interfaceName = method.ContainingType.Name;
                 var methodName = method.Name;
@@ -59,34 +53,57 @@ namespace {nameSpace}
                 var cacheKey = method.Parameters.Select(param => param.Name).AppendAll(" + ");
                 var paramsPassed = method.Parameters.Select(param => param.Name).AppendAll(", ");
 
-                BuildClassMethods(interfaceName, classBuilder, methodName, returnType, parameters, cacheKey, paramsPassed);
+                BuidMethodHeader(classAsText, interfaceName, methodName, returnType, parameters, cacheKey);
+                BuildMethodCacheConfigurations(config, classAsText);
+                BuildMethodFooter(classAsText, methodName, paramsPassed);
             }
         }
 
-        private static void BuildClassMethods(string interfaceName, StringBuilder classBuilder, string methodName, string returnType, string parameters, string cacheKey, string paramsPassed)
+        private static void BuildMethodFooter(StringBuilder classAsText, string methodName, string paramsPassed)
         {
-            classBuilder.Append($@" 
-{returnType} {interfaceName}.{methodName}({parameters})
-{{
-    var cacheKey = ""{methodName}"" + ""_"" + {cacheKey};
-    HyperCacheGenerated.Cache.TryGetValue(cacheKey, out var result);
-    if(result is null)
-    {{
-        var res = this.{methodName}({paramsPassed});
-        HyperCacheGenerated.Cache.Set(cacheKey, res);
-        return res;
+            classAsText.Append($@"
+            var res = this.{methodName}({paramsPassed});
+            return res;
+        }});
     }}
-    return ({returnType})result;
+");
+        }
+
+        private static void BuildMethodCacheConfigurations(HyperCacheConfig config, StringBuilder classAsText)
+        {
+            if (config.AbsoluteTimeExpiration.HasConfiguration)
+            {
+                classAsText.Append($@"        entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes({config.AbsoluteTimeExpiration.Value});");
+            }
+
+            if (config.SlidingTimeExpiration.HasConfiguration)
+            {
+                classAsText.Append($@"        entry.SlidingExpiration = TimeSpan.FromMinutes({config.SlidingTimeExpiration.Value});");
+            }
+        }
+
+        private static void BuidMethodHeader(StringBuilder classAsText, string interfaceName, string methodName, string returnType, string parameters, string cacheKey)
+        {
+            classAsText.Append($@" 
+    {returnType} {interfaceName}.{methodName}({parameters})
+    {{
+        var cacheKey = ""{methodName}"" + ""_"" + {cacheKey};
+        return HyperCacheGenerated.Cache.GetOrCreate(cacheKey, entry =>
+        {{
+    ");
+        }
+
+        private static void BuildClassFooter(StringBuilder classAsText)
+        {
+            classAsText.Append($@"
+    }}
 }}
 ");
         }
 
-        private static void BuildClassFooter(StringBuilder classBuilder)
+        private static void AddClassToSource(GeneratorExecutionContext context, string nameSpace, string className, StringBuilder classAsText)
         {
-            classBuilder.Append($@"
-    }}
-}}
-");
+            context.AddSource($"{nameSpace}_{className}", SourceText.From(classAsText.ToString(), Encoding.UTF8));
         }
 
         private static IEnumerable<IMethodSymbol> GetMethods(INamedTypeSymbol typeSymbol)

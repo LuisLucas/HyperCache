@@ -4,8 +4,8 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <LangVersion>preview</LangVersion>
-    <HyperCache_AbsoluteExpiration>5</HyperCache_AbsoluteExpiration>
-    <HyperCache_SlidingExpiration>5</HyperCache_SlidingExpiration>
+    <HyperCache_AbsoluteExpiration>1</HyperCache_AbsoluteExpiration>
+    <HyperCache_SlidingExpiration>0</HyperCache_SlidingExpiration>
   </PropertyGroup>
 
   <ItemGroup>

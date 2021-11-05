@@ -1,7 +1,6 @@
 ﻿namespace MyApp
 {
     using HyperCacheGenerator;
-    using Microsoft.Extensions.Caching.Memory;
     using System;
 
     [HyperCache]
@@ -33,12 +32,6 @@
 
         public bool GetSomethingWitEvenMoreParams(int anInt, string aString, bool itsABool)
         {
-            /*var cacheEntryOptions = new MemoryCacheEntryOptions()
-            {
-                SlidingExpiration = 
-            }
-    // Keep in cache for this time, reset time if accessed.
-    .SetSlidingExpiration(TimeSpan.FromSeconds(3));*/
             Console.WriteLine("This was called in ClassToCache");
             return anInt > 0 ? itsABool : !itsABool;
         }
