@@ -9,7 +9,7 @@
         internal static void AddHyperCache(GeneratorExecutionContext context)
         {
             var sourceBuilder = new StringBuilder(@"
-                    namespace MyApp
+                    namespace HyperCache
                     {
                         using Microsoft.Extensions.Caching.Memory;
 

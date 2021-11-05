@@ -1,5 +1,6 @@
 ﻿namespace HyperCache.Builders
 {
+    using HyperCache.Configurations.Models;
     using HyperCache.Helper;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -36,6 +37,7 @@ namespace {nameSpace}
 {{
     using System;
     using Microsoft.Extensions.Caching.Memory;
+    using HyperCache;
 
     public partial class {className} : {interfaces}
 {{
@@ -50,7 +52,7 @@ namespace {nameSpace}
                 var methodName = method.Name;
                 var returnType = method.ReturnType.ToString();
                 var parameters = method.Parameters.Select(param => param.Type + " " + param.Name).AppendAll(",");
-                var cacheKey = method.Parameters.Select(param => param.Name).AppendAll(" + ");
+                var cacheKey = method.Name + method.Parameters.Select(param => param.Name).AppendAll("_");
                 var paramsPassed = method.Parameters.Select(param => param.Name).AppendAll(", ");
 
                 BuidMethodHeader(classAsText, interfaceName, methodName, returnType, parameters, cacheKey);
@@ -87,7 +89,7 @@ namespace {nameSpace}
             classAsText.Append($@" 
     {returnType} {interfaceName}.{methodName}({parameters})
     {{
-        var cacheKey = ""{methodName}"" + ""_"" + {cacheKey};
+        var cacheKey = ""{cacheKey}"";
         return HyperCacheGenerated.Cache.GetOrCreate(cacheKey, entry =>
         {{
     ");
@@ -112,7 +114,8 @@ namespace {nameSpace}
                 .AllInterfaces
                 .SelectMany(x => x.GetMembers())
                 .Where(x => x.Kind is SymbolKind.Method && typeSymbol.GetMembers(x.ContainingNamespace.Name + "." + x.ContainingType.Name + "." + x.Name).IsEmpty)
-                .Select(x => (IMethodSymbol)x);
+                .Select(x => (IMethodSymbol)x)
+                .Where(x => !x.ReturnsVoid);
         }
 
         private static INamedTypeSymbol GetTypeSymbol(GeneratorExecutionContext context, ClassDeclarationSyntax classToCache)
