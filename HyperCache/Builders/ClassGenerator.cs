@@ -52,7 +52,7 @@ namespace {nameSpace}
                 var methodName = method.Name;
                 var returnType = method.ReturnType.ToString();
                 var parameters = method.Parameters.Select(param => param.Type + " " + param.Name).AppendAll(",");
-                var cacheKey = method.Name + method.Parameters.Select(param => param.Name).AppendAll("_");
+                var cacheKey = method.Parameters.Select(param => param.Name).AppendAll(" + ");
                 var paramsPassed = method.Parameters.Select(param => param.Name).AppendAll(", ");
 
                 BuidMethodHeader(classAsText, interfaceName, methodName, returnType, parameters, cacheKey);
@@ -75,12 +75,14 @@ namespace {nameSpace}
         {
             if (config.AbsoluteTimeExpiration.HasConfiguration)
             {
-                classAsText.Append($@"        entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes({config.AbsoluteTimeExpiration.Value});");
+                classAsText.Append($@"        
+            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes({config.AbsoluteTimeExpiration.Value});");
             }
 
             if (config.SlidingTimeExpiration.HasConfiguration)
             {
-                classAsText.Append($@"        entry.SlidingExpiration = TimeSpan.FromMinutes({config.SlidingTimeExpiration.Value});");
+                classAsText.Append($@"        
+            entry.SlidingExpiration = TimeSpan.FromMinutes({config.SlidingTimeExpiration.Value});");
             }
         }
 
@@ -89,10 +91,19 @@ namespace {nameSpace}
             classAsText.Append($@" 
     {returnType} {interfaceName}.{methodName}({parameters})
     {{
-        var cacheKey = ""{cacheKey}"";
+");
+            if (string.IsNullOrEmpty(cacheKey))
+            {
+                classAsText.Append($@"        var cacheKey = ""{methodName}"";");
+            }
+            else
+            {
+                classAsText.Append($@"        var cacheKey = ""{methodName}_"" + {cacheKey};");
+            }
+
+            classAsText.Append($@"
         return HyperCacheGenerated.Cache.GetOrCreate(cacheKey, entry =>
-        {{
-    ");
+        {{");
         }
 
         private static void BuildClassFooter(StringBuilder classAsText)

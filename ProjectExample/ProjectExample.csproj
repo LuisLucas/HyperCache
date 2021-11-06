@@ -4,8 +4,8 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
     <LangVersion>preview</LangVersion>
-    <HyperCache_AbsoluteExpiration>0</HyperCache_AbsoluteExpiration>
-    <HyperCache_SlidingExpiration>0</HyperCache_SlidingExpiration>
+    <HyperCache_AbsoluteExpiration>1</HyperCache_AbsoluteExpiration>
+    <HyperCache_SlidingExpiration>1</HyperCache_SlidingExpiration>
   </PropertyGroup>
 
   <ItemGroup>
