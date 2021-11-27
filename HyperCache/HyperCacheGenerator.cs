@@ -1,7 +1,7 @@
 ﻿namespace HyperCacheGenerator
 {
-    using HyperCache.Builders;
     using HyperCache.Configurations;
+    using HyperCache.Generator;
     using Microsoft.CodeAnalysis;
     using System;
     using System.Diagnostics;

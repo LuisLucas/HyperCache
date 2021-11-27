@@ -1,4 +1,4 @@
-﻿namespace HyperCache.Builders
+﻿namespace HyperCache.Generator
 {
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.Text;

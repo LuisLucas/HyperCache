@@ -3,6 +3,7 @@
     using AutoFixture;
     using FluentAssertions;
     using ProjectExample.SimpleTest;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class SimpleClassTest : BaseTest
@@ -32,6 +33,22 @@
 
             // Act
             var result = simpleClass.IntReturnMethod(param1);
+
+            // Assert
+            result.Should().Be(expectedResult);
+        }
+
+        [Fact]
+        public async Task TestAsyncMethodWithIntParam()
+        {
+            // Arrange
+            var param1 = this.Fixture.Create<int>();
+
+            ISimpleClass simpleClass = new SimpleClass();
+            var expectedResult = await simpleClass.StringReturnMethod(param1);
+
+            // Act
+            var result = await simpleClass.StringReturnMethod(param1);
 
             // Assert
             result.Should().Be(expectedResult);
