@@ -13,7 +13,7 @@ Class must be a partial class and needs to implement an interface for now.
 
 ## How To
 
-<code>
+```
   public interface ISimpleClass
   {
       int IntReturnMethod(int param1, string param2);
@@ -34,11 +34,11 @@ Class must be a partial class and needs to implement an interface for now.
           return this.random.Next() * param1 * param2.Length;
       }
   }
-</code>
+```
 
 This will generate 
 
-<code>
+```
  partial class SimpleClass : ISimpleClass
  {
     int ISimpleClass.IntReturnMethod(int param1, string param2)
@@ -52,4 +52,10 @@ This will generate
         });
     }
  }
-</code>
+```
+So a call to 
+```
+ISimpleClass simpleClass = new SimpleClass();
+var returnValue = simpleClass.IntReturnMethod(1, "something");
+```
+will hit the generated class and cache the result.
