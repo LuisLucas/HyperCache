@@ -11,6 +11,45 @@ This static class is only added if attribute HyperCache are in use.
 This attribute tells that this classes wants to make use of the memoryCache. 
 Class must be a partial class and needs to implement an interface for now.
 
-For example:
+## How To
 
-In construction... a bunch of things missing
+<code>
+  public interface ISimpleClass
+  {
+      int IntReturnMethod(int param1, string param2);
+  }
+  
+  [HyperCache]
+  partial class SimpleClass : ISimpleClass
+  {
+      private readonly Random random;
+
+      public SimpleClass()
+      {
+          this.random = new Random();
+      }
+  
+      public int IntReturnMethod(int param1, string param2)
+      {
+          return this.random.Next() * param1 * param2.Length;
+      }
+  }
+</code>
+
+This will generate 
+
+<code>
+ partial class SimpleClass : ISimpleClass
+ {
+    int ISimpleClass.IntReturnMethod(int param1, string param2)
+    {
+        var cacheKey = "IntReturnMethod_" + param1 + param2;
+        return HyperCacheGenerated.Cache.GetOrCreate(cacheKey, entry =>   
+        {        
+            entry.SlidingExpiration = TimeSpan.FromMinutes(1);
+            var res =  this.IntReturnMethod(param1, param2);
+            return res;
+        });
+    }
+ }
+</code>
