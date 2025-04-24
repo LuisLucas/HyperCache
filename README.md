@@ -97,4 +97,4 @@ This is a WIP project built for exploration and productivity — feel free to fo
 
 ---
 
-Made with ❤️ and way too much coffee.
+Made with ❤️
